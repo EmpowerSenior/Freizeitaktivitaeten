@@ -1,41 +1,37 @@
-document.getElementById("searchButton").addEventListener("click", function() {
-    const postalCode = document.getElementById("postalCode").value;
-    if (postalCode) {
-        findActivities(postalCode);
-    } else {
-        alert("Bitte geben Sie eine Postleitzahl ein.");
-    }
-});
+document.addEventListener('DOMContentLoaded', function() {
+    var activities = [
+        "Wandern",
+        "Schwimmen",
+        "Radfahren",
+        "Klettern",
+        "Joggen",
+        "Yoga",
+        "Tanzen",
+        "Segeln"
+    ];
 
-function findActivities(postalCode) {
-    const geocoder = new google.maps.Geocoder();
-    geocoder.geocode({ 'address': postalCode }, function(results, status) {
-        if (status === 'OK') {
-            const location = results[0].geometry.location;
-            const service = new google.maps.places.PlacesService(document.createElement('div'));
-            service.nearbySearch({
-                location: location,
-                radius: 20000, // 20 km
-                type: ['park', 'museum', 'zoo'] // Beispiel-Aktivitäten
-            }, function(results, status) {
-                if (status === google.maps.places.PlacesServiceStatus.OK) {
-                    displayResults(results);
-                } else {
-                    alert("Keine Freizeitaktivitäten gefunden.");
-                }
-            });
-        } else {
-            alert("Geocoder fehlgeschlagen: " + status);
+    var searchButton = document.getElementById('searchButton');
+    var searchInput = document.getElementById('searchInput');
+    var resultsList = document.getElementById('results');
+
+    searchButton.addEventListener('click', function() {
+        var query = searchInput.value.toLowerCase();
+        resultsList.innerHTML = '';
+
+        var filteredActivities = activities.filter(function(activity) {
+            return activity.toLowerCase().includes(query);
+        });
+
+        filteredActivities.forEach(function(activity) {
+            var li = document.createElement('li');
+            li.textContent = activity;
+            resultsList.appendChild(li);
+        });
+
+        if (filteredActivities.length === 0) {
+            var li = document.createElement('li');
+            li.textContent = 'Keine Ergebnisse gefunden.';
+            resultsList.appendChild(li);
         }
     });
-}
-
-function displayResults(results) {
-    const resultsDiv = document.getElementById("results");
-    resultsDiv.innerHTML = "";
-    results.forEach(place => {
-        const placeElement = document.createElement("div");
-        placeElement.innerText = place.name;
-        resultsDiv.appendChild(placeElement);
-    });
-}
+});
